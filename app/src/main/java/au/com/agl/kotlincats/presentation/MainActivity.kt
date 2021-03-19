@@ -49,6 +49,8 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 Log.d("Main", "" + display.size);
+                val sortedByGender = display.sortedBy { it.gender }
+                Log.d("Main", "" + sortedByGender.size);
             }
 
             override fun onError(error: Throwable) {
