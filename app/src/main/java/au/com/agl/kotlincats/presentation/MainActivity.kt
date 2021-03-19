@@ -35,22 +35,29 @@ class MainActivity : AppCompatActivity() {
             override fun onSuccess(data: MutableList<OwnerItem>) {
                 // TODO: display visually
                 Log.d(MainActivity::class.java.simpleName, data.toString())
-                var display: MutableList<OwnerItem> = mutableListOf()
-              // display = data
-                data.forEachIndexed { index, element ->
-                    val filteredList = data[index].pets?.filter { it.type.equals("Cat") }
-                    print(filteredList)
+
+                var onePetList: MutableList<OwnerItem> = mutableListOf() // We will get concurrent exception if we manipulate on data
+
+                data.forEachIndexed { index, element -> // Tbh it was easier for me to display the list with other animals hidden but cleaner way is to remove other animals
+                    val filteredList = data[index].pets?.filter { it.type.equals("Cat") } // only returns pets list
+//                    print(filteredList)
                     filteredList?.forEachIndexed { index1, pet ->
-                        data[index].pets?.clear()
-                        var ownerItem = data[index]
-                        ownerItem.pets?.clear()
-                        ownerItem.pets?.add(pet)
-                        display.add(ownerItem)
+                        data[index].pets?.clear() // clearing other types of animals as we only focusing on cats
+                        var ownerItem = data[index] // after clearing pets array we will add only cat object
+                        ownerItem.pets?.clear() //  Not needed but just making sure
+                        ownerItem.pets?.add(pet) // added cat object
+                        onePetList.add(ownerItem) // add the cat and now we have three separate records of cats as in the case of  Fred
                     }
                 }
-                Log.d("Main", "" + display.size);
-                val sortedByGender = display.sortedBy { it.gender }
+
+                Log.d("Main", "" + onePetList.size);
+                val sortedByGender = onePetList.sortedBy { it.gender } // Sort the data based on Gender
                 Log.d("Main", "" + sortedByGender.size);
+
+                sortedByGender.forEach{
+                    Log.d("item", it.name + " , " + it.gender +  " , " + it.pets?.get(0)?.type + " , " + it.pets?.get(0)?.name)
+                    // Just printing data for displaying in recyclerview We now need to get only male/female and display in sections
+                }
             }
 
             override fun onError(error: Throwable) {
@@ -59,15 +66,3 @@ class MainActivity : AppCompatActivity() {
         })
     }
 }
-
-
-//data[index].pets?.drop(index)?.forEachIndexed { index1, element1 ->
-//    if(element1.type == "Cat")
-//    {
-//        Log.d("Cat", ""+ element1.name)
-//        data[index1]!!.pets?.clear()
-//        data[index1]!!.pets?.add(element1)
-//        var ownerItem: OwnerItem = data[index1]!!
-//        display.add(ownerItem)
-//    }
-//}
